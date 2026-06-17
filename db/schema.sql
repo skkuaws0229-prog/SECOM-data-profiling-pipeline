@@ -1,0 +1,2 @@
+-- Milestone 1 does not implement database schema yet.
+-- This placeholder keeps the planned project structure visible.
