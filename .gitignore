@@ -21,3 +21,5 @@ reports/*
 .env
 .env.*
 !.env.example
+
+data/raw/*.data
