@@ -178,6 +178,29 @@ reports/secom_false_negative_analysis.csv
 reports/secom_threshold_error_analysis_report.md
 ```
 
+## Milestone 6 - Explainability / Feature Importance
+
+Milestone 6 analyzes which anonymized SECOM sensor features are influential for baseline defect prediction models. It uses `data/processed/modeling_master_table.csv` as the canonical dataset, fits models only on `split == train`, and explains/evaluates only on `split == test`.
+
+Logistic Regression importance uses absolute standardized coefficient magnitude. Random Forest importance uses impurity-based `feature_importances_`. Permutation importance, when generated, measures performance drop after shuffling a feature. Top-risk samples show what the model considers high-risk, and false-negative profiles help inspect actual defect samples missed by the model.
+
+Feature importance is not causal proof, SECOM sensor names are anonymized and must not be interpreted as physical process meanings, and the small defect count limits confidence.
+
+Run explainability analysis from the project root:
+
+```bash
+python scripts/run_explainability_secom.py
+```
+
+Expected outputs:
+
+```text
+reports/secom_feature_importance.csv
+reports/secom_top_feature_summary.csv
+reports/secom_error_feature_profile.csv
+reports/secom_explainability_report.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.
