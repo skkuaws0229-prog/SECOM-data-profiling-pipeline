@@ -17,13 +17,27 @@ data/processed/*
 data/processed/modeling_master_table.csv
 data/processed/**/material_master.csv
 data/processed/**/sequence_manifest.csv
+!data/processed/st_awfd_d1/
+!data/processed/st_awfd_d1/baseline_feature_metadata.json
+!data/processed/st_awfd_d2/
+!data/processed/st_awfd_d2/baseline_feature_metadata.json
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 
 # Generated reports.
 reports/*
+!reports/st_awfd_*_baseline_metrics.csv
+!reports/st_awfd_*_baseline_confusion_matrix.csv
+!reports/st_awfd_*_baseline_model_report.md
+!reports/st_awfd_baseline_comparison.md
+reports/st_awfd_d1_baseline_predictions.csv
+reports/st_awfd_d2_baseline_predictions.csv
 !reports/.gitkeep
+
+# Local model artifacts.
+models/st_awfd_d1/
+models/st_awfd_d2/
 
 # Local environment files.
 .env

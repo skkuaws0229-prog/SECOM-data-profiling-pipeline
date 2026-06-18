@@ -310,6 +310,44 @@ reports/st_awfd_d2_material_master_report.md
 reports/st_awfd_material_master_comparison.md
 ```
 
+## Milestone 12 - ST-AWFD Retrospective Baseline Models
+
+Milestone 12 trains separate full-process retrospective baseline models for ST-AWFD D1 and D2 using only the M11 MaterialID master tables. D1 and D2 remain separate pipelines and are not merged with each other, SECOM, or the raw event CSV files.
+
+The pipeline validates lineage columns, official train/test splits, binary labels, and unique `material_id` values before training. Numeric model features are selected dynamically while metadata, labels, path columns, and JSON columns are excluded. Median imputation is fit only on official train rows. Logistic Regression also uses train-only standard scaling, while Random Forest does not use scaling.
+
+This milestone is retrospective baseline modeling only. Default threshold `0.50` is not an operationally approved threshold, class imbalance can make accuracy misleading, and false negatives require threshold/cost analysis in a later milestone.
+
+If an official train split contains only one label class, supervised Logistic Regression and Random Forest training is skipped for that dataset with null metrics and a clear warning rather than fabricated results.
+
+Run ST-AWFD baseline training from the project root:
+
+```bash
+python scripts/run_train_st_awfd_baseline.py --dataset all
+```
+
+Expected outputs:
+
+```text
+reports/st_awfd_d1_baseline_metrics.csv
+reports/st_awfd_d1_baseline_confusion_matrix.csv
+reports/st_awfd_d1_baseline_model_report.md
+reports/st_awfd_d1_baseline_predictions.csv
+data/processed/st_awfd_d1/baseline_feature_metadata.json
+models/st_awfd_d1/logistic_regression.joblib
+models/st_awfd_d1/random_forest.joblib
+
+reports/st_awfd_d2_baseline_metrics.csv
+reports/st_awfd_d2_baseline_confusion_matrix.csv
+reports/st_awfd_d2_baseline_model_report.md
+reports/st_awfd_d2_baseline_predictions.csv
+data/processed/st_awfd_d2/baseline_feature_metadata.json
+models/st_awfd_d2/logistic_regression.joblib
+models/st_awfd_d2/random_forest.joblib
+
+reports/st_awfd_baseline_comparison.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.
