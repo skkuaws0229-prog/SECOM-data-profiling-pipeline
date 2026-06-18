@@ -284,6 +284,32 @@ reports/st_awfd_d2_profile_report.md
 reports/st_awfd_master_table_design_decision.md
 ```
 
+## Milestone 11 - ST-AWFD MaterialID-level Retrospective Master Tables
+
+Milestone 11 creates separate retrospective `MaterialID`-level master tables for ST-AWFD D1 and D2. One row equals one `MaterialID`.
+
+D1 and D2 remain separate datasets. M11 does not merge with SECOM, train models, impute values, or modify raw CSVs. Raw event-level files are preserved for future sequence-aware and early-warning modeling.
+
+Run ST-AWFD MaterialID master table generation from the project root:
+
+```bash
+python scripts/run_build_st_awfd_material_master.py --dataset all
+```
+
+Expected outputs:
+
+```text
+data/processed/st_awfd_d1/material_master.csv
+data/processed/st_awfd_d1/material_master_metadata.json
+data/processed/st_awfd_d1/sequence_manifest.csv
+reports/st_awfd_d1_material_master_report.md
+data/processed/st_awfd_d2/material_master.csv
+data/processed/st_awfd_d2/material_master_metadata.json
+data/processed/st_awfd_d2/sequence_manifest.csv
+reports/st_awfd_d2_material_master_report.md
+reports/st_awfd_material_master_comparison.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.

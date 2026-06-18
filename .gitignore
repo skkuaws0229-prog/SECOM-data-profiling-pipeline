@@ -15,6 +15,8 @@ data/raw/st_awfd/download_manifest.json
 data/interim/*
 data/processed/*
 data/processed/modeling_master_table.csv
+data/processed/**/material_master.csv
+data/processed/**/sequence_manifest.csv
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep

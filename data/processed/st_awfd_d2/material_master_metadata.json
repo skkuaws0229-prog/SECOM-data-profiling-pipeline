@@ -1,0 +1,52 @@
+{
+  "aggregation_strategy": "retrospective_material_level_summary",
+  "dataset_id": "st_awfd_d2",
+  "feature_set_version": "st_awfd_material_retrospective_v1",
+  "generated_at_utc": "2026-06-18T08:54:04Z",
+  "label_binary_distribution": {
+    "0": 789,
+    "1": 367
+  },
+  "material_master_row_count": 1156,
+  "notes": [
+    "One row equals one MaterialID.",
+    "D1 and D2 remain separate datasets.",
+    "No model training or imputation was performed.",
+    "Raw event-level files are preserved for future sequence-aware modeling."
+  ],
+  "numeric_feature_columns": [
+    "feature_1",
+    "feature_2",
+    "feature_3",
+    "feature_4",
+    "feature_5",
+    "feature_6",
+    "feature_7",
+    "feature_8",
+    "feature_9",
+    "feature_10",
+    "feature_11",
+    "feature_12",
+    "feature_13",
+    "feature_14",
+    "feature_15",
+    "feature_16",
+    "feature_17",
+    "feature_18",
+    "feature_19",
+    "feature_20"
+  ],
+  "numeric_feature_count": 20,
+  "observed_step_ids": [
+    1,
+    2
+  ],
+  "official_split_counts": {
+    "test": 604,
+    "train": 552
+  },
+  "preprocessing_version": "m11_material_aggregation_v1",
+  "raw_csv_path": "C:\\work\\manufacturing-ai-agent-platform\\data\\raw\\st_awfd\\wafer_d2\\D2.csv",
+  "sequence_manifest_path": "C:\\work\\manufacturing-ai-agent-platform\\data\\processed\\st_awfd_d2\\sequence_manifest.csv",
+  "source_record_count": 126794
+}
