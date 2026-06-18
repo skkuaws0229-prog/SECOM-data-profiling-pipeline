@@ -262,6 +262,28 @@ data/raw/st_awfd/wafer_d2/D2.csv
 data/raw/st_awfd/download_manifest.json
 ```
 
+## Milestone 10 - ST-AWFD Read-only Profiling & Master Table Design
+
+Milestone 10 performs read-only profiling of local ST-AWFD D1 and D2 raw CSV files. ST-AWFD raw data has event-level / time-sample rows, and `MaterialID` is the recommended future modeling entity.
+
+The profiling verified that `target` and `is_test` are consistent within `MaterialID` for the currently downloaded D1/D2 files. D1 and D2 remain separate datasets. No model training, model-input aggregation, raw-data modification, or ST-AWFD master table creation occurred in M10.
+
+M11 will create retrospective `MaterialID`-level master tables while preserving raw sequence data for future early-warning modeling.
+
+Run ST-AWFD read-only profiling from the project root:
+
+```bash
+python scripts/run_profile_st_awfd.py
+```
+
+Expected outputs:
+
+```text
+reports/st_awfd_d1_profile_report.md
+reports/st_awfd_d2_profile_report.md
+reports/st_awfd_master_table_design_decision.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.
