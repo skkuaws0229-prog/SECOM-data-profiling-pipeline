@@ -201,6 +201,27 @@ reports/secom_error_feature_profile.csv
 reports/secom_explainability_report.md
 ```
 
+## Milestone 7 - Manufacturing Quality Report Automation
+
+Milestone 7 generates a single integrated manufacturing quality summary report from the existing M1-M6 artifacts. It summarizes data profiling, data quality, feature engineering, modeling master table lineage, baseline modeling, threshold/error analysis, and explainability.
+
+This milestone does not retrain models and does not fabricate new metrics. It is intended for manufacturing quality review and portfolio presentation. The report keeps the warning that SECOM sensor features are anonymized, and it states that feature importance is not causal proof.
+
+Recommended next steps include stronger tabular models such as LightGBM or XGBoost, cross-validation, calibration, cost-sensitive thresholding, dashboard/API development, and RAG/Agent workflows only after structured reporting is stable.
+
+Run integrated report generation from the project root:
+
+```bash
+python scripts/run_generate_quality_report.py
+```
+
+Expected outputs:
+
+```text
+reports/manufacturing_quality_summary_report.md
+reports/manufacturing_quality_summary.json
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.
