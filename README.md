@@ -222,6 +222,24 @@ reports/manufacturing_quality_summary_report.md
 reports/manufacturing_quality_summary.json
 ```
 
+## Milestone 8 - Data Registry & Dataset Expansion Plan
+
+Milestone 8 prepares a metadata-only registry for expanding the project beyond SECOM into multiple public semiconductor/manufacturing datasets: SECOM, ST-AWFD Wafer D1, ST-AWFD Wafer D2, and WM-811K.
+
+This milestone does not download large datasets, train new models, move existing SECOM outputs, or fabricate dataset metrics. It records modality differences clearly: SECOM is tabular sensor classification, ST-AWFD is wafer time-series / production lot fault detection, and WM-811K is wafer map image classification.
+
+Run dataset registry validation from the project root:
+
+```bash
+python scripts/validate_dataset_registry.py
+```
+
+Expected output:
+
+```text
+reports/dataset_expansion_plan_report.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.

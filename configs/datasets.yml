@@ -1,0 +1,65 @@
+datasets:
+  - dataset_id: secom
+    display_name: UCI SECOM Semiconductor Manufacturing Dataset
+    source_url: https://archive.ics.uci.edu/dataset/179/secom
+    source_type: public_repository
+    domain: semiconductor_manufacturing
+    modality: tabular_sensor
+    task_type: binary_pass_fail_classification
+    label_column: label_binary after preprocessing
+    split_column: split after preprocessing
+    local_raw_path: data/raw/
+    local_processed_path: data/processed/
+    expected_pipeline_branch: secom_tabular_baseline
+    license_note: UCI page lists CC BY 4.0; verify license before redistribution.
+    download_status: available_local
+    use_in_project: current
+    notes: Current project baseline. Tabular anonymized sensor classification with limited fail samples.
+  - dataset_id: st_awfd_d1
+    display_name: ST-AWFD Wafer D1
+    source_url: https://github.com/STMicroelectronics/ST-AWFD
+    source_type: public_github_repository
+    domain: semiconductor_manufacturing
+    modality: wafer_timeseries
+    task_type: abnormal_material_detection
+    label_column: target
+    split_column: is_test
+    local_raw_path: data/raw/st_awfd/wafer_d1/
+    local_processed_path: data/processed/st_awfd_d1/
+    expected_pipeline_branch: st_awfd_timeseries_tabular
+    license_note: Verify repository license and dataset usage terms before download or redistribution.
+    download_status: planned
+    use_in_project: next
+    notes: Planned next branch. Wafer time-series and production lot fault detection differ from SECOM tabular sensor rows.
+  - dataset_id: st_awfd_d2
+    display_name: ST-AWFD Wafer D2
+    source_url: https://github.com/STMicroelectronics/ST-AWFD
+    source_type: public_github_repository
+    domain: semiconductor_manufacturing
+    modality: wafer_timeseries
+    task_type: abnormal_material_detection
+    label_column: target
+    split_column: is_test
+    local_raw_path: data/raw/st_awfd/wafer_d2/
+    local_processed_path: data/processed/st_awfd_d2/
+    expected_pipeline_branch: st_awfd_timeseries_tabular
+    license_note: Verify repository license and dataset usage terms before download or redistribution.
+    download_status: planned
+    use_in_project: next
+    notes: Planned next branch. Wafer D2 should share the ST-AWFD time-series handling pattern, not the SECOM baseline unchanged.
+  - dataset_id: wm811k
+    display_name: WM-811K Wafer Map Dataset
+    source_url: https://www.kaggle.com/datasets/qingyi/wm811k-wafer-map
+    source_type: public_kaggle_dataset
+    domain: semiconductor_manufacturing
+    modality: wafer_map_image
+    task_type: multiclass_wafer_defect_pattern_classification
+    label_column: failureType
+    split_column: null
+    local_raw_path: data/raw/wm811k/
+    local_processed_path: data/processed/wm811k/
+    expected_pipeline_branch: wm811k_image_classification
+    license_note: Verify Kaggle dataset license and access terms before download or redistribution.
+    download_status: planned
+    use_in_project: phase_2
+    notes: Separate image branch. WM-811K wafer maps should not be forced into the SECOM tabular pipeline.
