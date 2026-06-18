@@ -104,6 +104,59 @@ data/processed/feature_set_metadata.json
 reports/secom_feature_engineering_report.md
 ```
 
+## Milestone 3.5: Modeling Master Table & Dataset Lineage
+
+Milestone 3.5 creates a canonical modeling master table that keeps each SECOM sample, lineage columns, split assignment, binary labels, preprocessing versions, and selected imputed sensor features together in one row-level artifact.
+
+The split files from Milestone 3 are optimized for model training. The modeling master table is optimized for auditability, threshold analysis, and future false positive / false negative error analysis.
+
+Run the modeling master table builder from the project root:
+
+```bash
+python scripts/run_build_modeling_master_secom.py
+```
+
+Expected outputs:
+
+```text
+data/processed/modeling_master_table.csv
+data/processed/modeling_master_metadata.json
+reports/secom_modeling_master_table_report.md
+```
+
+`modeling_master_table.csv` is generated locally and ignored by Git.
+
+## Milestone 4: Baseline Defect Prediction Model
+
+Milestone 4 trains reproducible baseline defect prediction models using the processed train/test files from Milestone 3. Original SECOM labels are converted from `-1/1` into binary labels where `0` means pass/normal and `1` means fail/defect.
+
+This milestone is baseline modeling only. It does not add RAG, agents, FastAPI, Docker, dashboards, or heavy hyperparameter tuning.
+
+Run baseline training from the project root:
+
+```bash
+python scripts/run_train_baseline_secom.py
+```
+
+Expected outputs:
+
+```text
+reports/secom_baseline_model_metrics.csv
+reports/secom_confusion_matrix.csv
+reports/secom_prediction_sample.csv
+reports/secom_baseline_model_report.md
+```
+
+Main evaluation metrics:
+
+- Accuracy
+- Precision
+- Recall
+- F1
+- Average precision / PR-AUC
+- ROC-AUC
+- False positives and false negatives
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.

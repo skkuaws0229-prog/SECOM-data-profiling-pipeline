@@ -7,8 +7,10 @@ __pycache__/
 
 # Local raw/intermediate data files are not committed.
 data/raw/*
+data/raw/*.data
 data/interim/*
 data/processed/*
+data/processed/modeling_master_table.csv
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
@@ -21,7 +23,3 @@ reports/*
 .env
 .env.*
 !.env.example
-
-data/raw/*.data
-
-data/raw/*.data
