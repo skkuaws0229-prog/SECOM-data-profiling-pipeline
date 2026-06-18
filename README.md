@@ -240,6 +240,28 @@ Expected output:
 reports/dataset_expansion_plan_report.md
 ```
 
+## Milestone 9 - ST-AWFD Acquisition & Inventory
+
+Milestone 9 downloads ST-AWFD D1/D2 automatically from the configured official registry URLs. Raw outputs are stored locally under `data/raw/st_awfd/`.
+
+Raw CSV files, ZIP archives, and `download_manifest.json` are intentionally ignored by Git. The downloader validates ZIP archives before extraction. ZIP archives are removed by default unless `--keep-archives` is used.
+
+This milestone does not perform profiling, modeling master table creation, feature engineering, or model training. The next step is read-only profiling of `D1.csv` and `D2.csv`.
+
+Run ST-AWFD acquisition from the project root:
+
+```bash
+python scripts/download_st_awfd.py --dataset all
+```
+
+Expected local outputs:
+
+```text
+data/raw/st_awfd/wafer_d1/D1.csv
+data/raw/st_awfd/wafer_d2/D2.csv
+data/raw/st_awfd/download_manifest.json
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.

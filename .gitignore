@@ -8,6 +8,10 @@ __pycache__/
 # Local raw/intermediate data files are not committed.
 data/raw/*
 data/raw/*.data
+data/raw/st_awfd/
+data/raw/st_awfd/archives/
+data/raw/st_awfd/archives/*.zip
+data/raw/st_awfd/download_manifest.json
 data/interim/*
 data/processed/*
 data/processed/modeling_master_table.csv
