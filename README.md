@@ -81,6 +81,29 @@ reports/secom_feature_quality_summary.csv
 reports/secom_quality_decision_report.md
 ```
 
+## Milestone 3: Feature Engineering Pipeline
+
+Milestone 3 creates reproducible train/test feature sets using the Milestone 2 quality decisions. It excludes generated metadata columns, removes `drop_candidate` features, keeps `keep` and `review` features, stratifies the split by `label`, and applies median imputation fit on `X_train` only.
+
+This milestone prepares data for later modeling. It does not train ML models, build RAG, add agents, expose APIs, use Docker, or assign fabricated process meanings to anonymized SECOM features.
+
+Run the feature engineering pipeline from the project root:
+
+```bash
+python scripts/run_build_features_secom.py
+```
+
+Expected outputs:
+
+```text
+data/processed/X_train.csv
+data/processed/X_test.csv
+data/processed/y_train.csv
+data/processed/y_test.csv
+data/processed/feature_set_metadata.json
+reports/secom_feature_engineering_report.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.
