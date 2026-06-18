@@ -19,7 +19,6 @@ from src.modeling.train_baseline import (
     evaluate_classifier,
     load_feature_set_metadata,
     load_processed_datasets,
-    normalize_labels,
     train_logistic_regression,
     train_random_forest,
 )
@@ -38,9 +37,7 @@ def main() -> None:
     reports_dir = PROJECT_ROOT / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
 
-    X_train, X_test, y_train_raw, y_test_raw = load_processed_datasets(processed_dir)
-    y_train = normalize_labels(y_train_raw)
-    y_test = normalize_labels(y_test_raw)
+    X_train, X_test, y_train, y_test = load_processed_datasets(processed_dir)
     metadata = load_feature_set_metadata(processed_dir)
 
     logistic_model = train_logistic_regression(

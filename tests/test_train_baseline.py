@@ -5,7 +5,10 @@ from src.modeling.train_baseline import (
     build_metrics_dataframe,
     build_prediction_sample,
     evaluate_classifier,
+    get_sensor_feature_columns,
+    load_processed_datasets,
     normalize_labels,
+    split_train_test_from_master,
 )
 
 
@@ -30,6 +33,72 @@ def test_normalize_labels_converts_original_secom_labels_to_binary() -> None:
     normalized = normalize_labels(labels)
 
     assert normalized.tolist() == [0, 1, 0, 1]
+
+
+def test_sensor_feature_selection_excludes_master_metadata_columns() -> None:
+    data = pd.DataFrame(
+        {
+            "sample_id": [0],
+            "timestamp": ["19/07/2008 11:55:00"],
+            "label_original": [-1],
+            "label_binary": [0],
+            "split": ["train"],
+            "feature_set_version": ["v1"],
+            "quality_rule_version": ["v1"],
+            "preprocessing_version": ["v1"],
+            "imputation_strategy": ["median_train_only"],
+            "sensor_000": [1.0],
+            "sensor_001": [2.0],
+        }
+    )
+
+    assert get_sensor_feature_columns(data) == ["sensor_000", "sensor_001"]
+
+
+def test_split_train_test_from_master_uses_split_and_label_binary() -> None:
+    master = pd.DataFrame(
+        {
+            "sample_id": [0, 1, 2, 3],
+            "timestamp": ["a", "b", "c", "d"],
+            "label_original": [-1, 1, -1, 1],
+            "label_binary": [0, 1, 0, 1],
+            "split": ["train", "train", "test", "test"],
+            "feature_set_version": ["v1"] * 4,
+            "quality_rule_version": ["v1"] * 4,
+            "preprocessing_version": ["v1"] * 4,
+            "imputation_strategy": ["median_train_only"] * 4,
+            "sensor_000": [1.0, 2.0, 3.0, 4.0],
+            "sensor_001": [5.0, 6.0, 7.0, 8.0],
+        }
+    )
+
+    X_train, X_test, y_train, y_test = split_train_test_from_master(master)
+
+    assert X_train.columns.tolist() == ["sensor_000", "sensor_001"]
+    assert X_train.shape == (2, 2)
+    assert X_test.shape == (2, 2)
+    assert y_train.tolist() == [0, 1]
+    assert y_test.tolist() == [0, 1]
+
+
+def test_load_processed_datasets_reads_modeling_master_table(tmp_path) -> None:
+    processed_dir = tmp_path / "processed"
+    processed_dir.mkdir()
+    master = pd.DataFrame(
+        {
+            "label_binary": [0, 1],
+            "split": ["train", "test"],
+            "sensor_000": [1.0, 2.0],
+        }
+    )
+    master.to_csv(processed_dir / "modeling_master_table.csv", index=False)
+
+    X_train, X_test, y_train, y_test = load_processed_datasets(processed_dir)
+
+    assert X_train["sensor_000"].tolist() == [1.0]
+    assert X_test["sensor_000"].tolist() == [2.0]
+    assert y_train.tolist() == [0]
+    assert y_test.tolist() == [1]
 
 
 def test_metrics_dataframe_contains_required_columns() -> None:

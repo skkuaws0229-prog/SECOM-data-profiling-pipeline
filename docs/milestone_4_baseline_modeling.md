@@ -1,6 +1,12 @@
 # Milestone 4: Baseline Defect Prediction Model
 
-Milestone 4 trains reproducible baseline classifiers on the processed SECOM feature sets from Milestone 3.
+Milestone 4 trains reproducible baseline classifiers using the canonical modeling master table from Milestone 3.5:
+
+```text
+data/processed/modeling_master_table.csv
+```
+
+It uses rows where `split == "train"` for model fitting and rows where `split == "test"` for evaluation. The target is `label_binary`.
 
 ## Why Baselines First
 
@@ -9,7 +15,7 @@ Baseline models create a grounded reference point before more complex modeling w
 This milestone uses:
 
 - Logistic Regression with class balancing
-- Random Forest with class balancing and a shallow `max_depth=5` baseline regularization setting
+- Random Forest with class balancing
 
 It does not perform heavy hyperparameter tuning.
 
@@ -26,6 +32,8 @@ For binary classification they are converted to:
 - `1`: fail / defect
 
 The positive class is defect label `1`.
+
+In M4, this conversion is read from the master table as `label_binary`; `label_original` is retained in the master table for lineage.
 
 ## Why Accuracy Is Not Enough
 

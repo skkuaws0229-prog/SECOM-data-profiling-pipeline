@@ -1,4 +1,4 @@
-"""Baseline defect prediction models for processed SECOM features."""
+"""Baseline defect prediction models from the SECOM modeling master table."""
 
 from __future__ import annotations
 
@@ -23,6 +23,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
+METADATA_COLUMNS = {
+    "sample_id",
+    "timestamp",
+    "label_original",
+    "label_binary",
+    "split",
+    "feature_set_version",
+    "quality_rule_version",
+    "preprocessing_version",
+    "imputation_strategy",
+}
 REQUIRED_METRIC_COLUMNS = [
     "model_name",
     "accuracy",
@@ -38,30 +49,55 @@ REQUIRED_METRIC_COLUMNS = [
 ]
 
 
+def get_sensor_feature_columns(df: pd.DataFrame) -> list[str]:
+    """Return anonymized sensor feature columns from the modeling master table."""
+    return [
+        column
+        for column in df.columns
+        if column not in METADATA_COLUMNS and column.startswith("sensor_")
+    ]
+
+
+def load_modeling_master_table(path: Path) -> pd.DataFrame:
+    """Load the canonical M3.5 modeling master table."""
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Modeling master table not found: {path}")
+    return pd.read_csv(path)
+
+
 def load_processed_datasets(
     processed_dir: Path,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Load Milestone 3 processed train/test datasets."""
+    """Load train/test data from the canonical modeling master table."""
     processed_dir = Path(processed_dir)
-    paths = {
-        "X_train": processed_dir / "X_train.csv",
-        "X_test": processed_dir / "X_test.csv",
-        "y_train": processed_dir / "y_train.csv",
-        "y_test": processed_dir / "y_test.csv",
-    }
-    missing_paths = [str(path) for path in paths.values() if not path.exists()]
-    if missing_paths:
-        raise FileNotFoundError(f"Missing processed dataset files: {missing_paths}")
+    master_table = load_modeling_master_table(processed_dir / "modeling_master_table.csv")
+    return split_train_test_from_master(master_table)
 
-    X_train = pd.read_csv(paths["X_train"])
-    X_test = pd.read_csv(paths["X_test"])
-    y_train_df = pd.read_csv(paths["y_train"])
-    y_test_df = pd.read_csv(paths["y_test"])
 
-    if "label" not in y_train_df.columns or "label" not in y_test_df.columns:
-        raise ValueError("y_train.csv and y_test.csv must contain a label column")
+def split_train_test_from_master(
+    master_df: pd.DataFrame,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """Split modeling master rows into train/test features and binary labels."""
+    required_columns = {"label_binary", "split"}
+    missing_columns = required_columns.difference(master_df.columns)
+    if missing_columns:
+        raise ValueError(f"Modeling master table missing columns: {sorted(missing_columns)}")
 
-    return X_train, X_test, y_train_df["label"], y_test_df["label"]
+    feature_columns = get_sensor_feature_columns(master_df)
+    if not feature_columns:
+        raise ValueError("Modeling master table contains no sensor_* feature columns")
+
+    train_df = master_df.loc[master_df["split"] == "train"].copy()
+    test_df = master_df.loc[master_df["split"] == "test"].copy()
+    if train_df.empty or test_df.empty:
+        raise ValueError("Modeling master table must contain train and test rows")
+
+    X_train = train_df[feature_columns].reset_index(drop=True)
+    X_test = test_df[feature_columns].reset_index(drop=True)
+    y_train = train_df["label_binary"].astype(int).reset_index(drop=True)
+    y_test = test_df["label_binary"].astype(int).reset_index(drop=True)
+    return X_train, X_test, y_train, y_test
 
 
 def normalize_labels(y: pd.Series) -> pd.Series:
@@ -104,7 +140,6 @@ def train_random_forest(
     """Train a class-balanced Random Forest baseline."""
     model = RandomForestClassifier(
         n_estimators=300,
-        max_depth=5,
         class_weight="balanced",
         random_state=random_state,
         n_jobs=-1,
@@ -133,11 +168,6 @@ def _validate_metric_inputs(y_test: pd.Series, y_pred: pd.Series) -> None:
             "Evaluation requires y_test to contain both binary classes 0 and 1; "
             f"observed {sorted(observed_labels)}"
         )
-    if int((y_pred == 1).sum()) == 0:
-        raise ValueError(
-            "Precision is undefined because the classifier predicted no defect "
-            "samples with label 1."
-        )
 
 
 def evaluate_classifier(
@@ -156,9 +186,9 @@ def evaluate_classifier(
     return {
         "model_name": model_name,
         "accuracy": float(accuracy_score(y_test, y_pred)),
-        "precision": float(precision_score(y_test, y_pred, pos_label=1)),
-        "recall": float(recall_score(y_test, y_pred, pos_label=1)),
-        "f1": float(f1_score(y_test, y_pred, pos_label=1)),
+        "precision": float(precision_score(y_test, y_pred, pos_label=1, zero_division=0)),
+        "recall": float(recall_score(y_test, y_pred, pos_label=1, zero_division=0)),
+        "f1": float(f1_score(y_test, y_pred, pos_label=1, zero_division=0)),
         "average_precision": float(average_precision_score(y_test, y_score, pos_label=1)),
         "roc_auc": float(roc_auc_score(y_test, y_score)),
         "false_positive": int(fp),
@@ -240,7 +270,6 @@ def build_baseline_model_report(
 ) -> str:
     """Build a Markdown report for Milestone 4 baseline modeling."""
     split = metadata.get("split", {})
-    imputation = metadata.get("imputation", {})
 
     display_metrics = metrics_df.copy()
     for column in [
@@ -256,22 +285,24 @@ def build_baseline_model_report(
     lines = [
         "# SECOM Baseline Defect Prediction Report",
         "",
-        "Milestone 4 trains reproducible baseline classifiers on the processed SECOM feature set.",
+        "Milestone 4 trains reproducible baseline classifiers from the canonical SECOM modeling master table.",
         "",
-        "Original SECOM labels are converted explicitly: `-1 -> 0` for pass/normal and `1 -> 1` for fail/defect.",
+        "M4 uses `data/processed/modeling_master_table.csv` as the canonical dataset. It trains on rows where `split == train`, evaluates on rows where `split == test`, and uses `label_binary` as the target.",
+        "",
+        "The modeling master table preserves original SECOM label lineage: `label_original == -1` maps to `label_binary == 0` normal and `label_original == 1` maps to `label_binary == 1` defect.",
         "",
         "## Scope",
         "",
         "This milestone does not perform heavy hyperparameter tuning and does not add RAG, agents, APIs, dashboards, or Docker.",
-        "Random Forest uses `max_depth=5` as a conservative baseline regularization setting while keeping `n_estimators=300`, `class_weight=\"balanced\"`, `random_state=42`, and `n_jobs=-1`.",
         "",
-        "## Processed Dataset",
+        "## Canonical Dataset",
         "",
-        f"- Final feature count: {metadata.get('final_feature_count')}",
+        f"- Modeling master row count: {metadata.get('row_count')}",
+        f"- Selected sensor feature count: {metadata.get('selected_feature_count')}",
         f"- Train row count: {split.get('train_row_count')}",
         f"- Test row count: {split.get('test_row_count')}",
-        f"- Imputation strategy: {imputation.get('strategy')}",
-        f"- Imputation fit on: {imputation.get('fit_on')}",
+        f"- Imputation strategy: {metadata.get('imputation_strategy')}",
+        f"- Feature set version: {metadata.get('feature_set_version')}",
         "",
         "## Metrics",
         "",
@@ -293,8 +324,8 @@ def build_baseline_model_report(
 
 
 def load_feature_set_metadata(processed_dir: Path) -> dict:
-    """Load Milestone 3 feature set metadata."""
-    metadata_path = Path(processed_dir) / "feature_set_metadata.json"
+    """Load M3.5 modeling master metadata for baseline report context."""
+    metadata_path = Path(processed_dir) / "modeling_master_metadata.json"
     if not metadata_path.exists():
-        raise FileNotFoundError(f"Feature set metadata not found: {metadata_path}")
+        raise FileNotFoundError(f"Modeling master metadata not found: {metadata_path}")
     return json.loads(metadata_path.read_text(encoding="utf-8"))

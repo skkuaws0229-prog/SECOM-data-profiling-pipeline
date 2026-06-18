@@ -128,7 +128,7 @@ reports/secom_modeling_master_table_report.md
 
 ## Milestone 4: Baseline Defect Prediction Model
 
-Milestone 4 trains reproducible baseline defect prediction models using the processed train/test files from Milestone 3. Original SECOM labels are converted from `-1/1` into binary labels where `0` means pass/normal and `1` means fail/defect.
+Milestone 4 trains reproducible baseline defect prediction models using `data/processed/modeling_master_table.csv` as the canonical dataset. It uses `split == train` for model fitting, `split == test` for evaluation, `label_binary` as the target, and only `sensor_*` columns as features.
 
 This milestone is baseline modeling only. It does not add RAG, agents, FastAPI, Docker, dashboards, or heavy hyperparameter tuning.
 
