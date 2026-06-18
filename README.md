@@ -157,6 +157,27 @@ Main evaluation metrics:
 - ROC-AUC
 - False positives and false negatives
 
+## Milestone 5 - Threshold & Error Analysis
+
+Milestone 5 analyzes how different classification thresholds affect defect detection on the SECOM test split. It uses `data/processed/modeling_master_table.csv` as the canonical dataset, fits models on `split == train`, evaluates on `split == test`, and treats `label_binary == 1` as the positive defect class.
+
+Accuracy can be misleading in imbalanced SECOM defect prediction, so the analysis emphasizes recall, false negatives, F2, and the precision/recall trade-off across thresholds. Threshold `0.5` is only a default operating point; lowering the threshold can reduce false negatives but may increase false positives. Top-risk samples help prioritize inspection candidates, and false negative analysis shows which defect samples were missed. SECOM sensor names are anonymized and must not be interpreted as physical process meanings.
+
+Run threshold and error analysis from the project root:
+
+```bash
+python scripts/run_threshold_analysis_secom.py
+```
+
+Expected outputs:
+
+```text
+reports/secom_threshold_metrics.csv
+reports/secom_top_risk_samples.csv
+reports/secom_false_negative_analysis.csv
+reports/secom_threshold_error_analysis_report.md
+```
+
 ## Design Notes
 
 SECOM feature columns are anonymized. This project names them as generic sensor features, for example `sensor_000`, and does not assign fabricated manufacturing process meanings.
